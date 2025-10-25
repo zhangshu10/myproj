@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>五子棋游戏</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- 模式选择界面 -->
+    <div id="mode-selection" class="mode-selection">
+        <div class="mode-content">
+            <h1>🎮 五子棋</h1>
+            <h2>选择游戏模式</h2>
+            <div class="mode-buttons">
+                <button id="pvp-btn" class="mode-btn">
+                    <span class="mode-icon">👥</span>
+                    <span class="mode-title">双人对战</span>
+                    <span class="mode-desc">与好友一起对战</span>
+                </button>
+                <button id="pvc-btn" class="mode-btn">
+                    <span class="mode-icon">🤖</span>
+                    <span class="mode-title">人机对战</span>
+                    <span class="mode-desc">挑战智能AI</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container" id="game-container" style="display: none;">
+        <div class="header">
+            <h1>🎮 五子棋</h1>
+            <div class="game-mode-display">
+                <span id="mode-text">双人对战</span>
+                <button id="change-mode-btn" class="btn-small">切换模式</button>
+            </div>
+            <div class="game-info">
+                <div class="player-indicator">
+                    <span id="current-player">当前玩家：</span>
+                    <span id="player-turn" class="black-turn">⚫ 黑棋</span>
+                </div>
+                <button id="restart-btn" class="btn">重新开始</button>
+            </div>
+        </div>
+        
+        <div class="game-board-container">
+            <canvas id="game-board" width="750" height="750"></canvas>
+        </div>
+        
+        <div class="game-status">
+            <div id="message" class="message"></div>
+        </div>
+        
+        <div class="rules">
+            <h3>游戏规则</h3>
+            <ul>
+                <li>黑棋先行，双方轮流落子</li>
+                <li>横、竖、斜任意方向连成五个棋子即获胜</li>
+                <li>点击棋盘交叉点落子</li>
+                <li>点击"重新开始"按钮开始新游戏</li>
+            </ul>
+        </div>
+    </div>
+    
+    <div id="winner-modal" class="modal">
+        <div class="modal-content">
+            <h2 id="winner-text"></h2>
+            <button id="play-again-btn" class="btn btn-large">再玩一局</button>
+        </div>
+    </div>
+    
+    <script src="game.js"></script>
+</body>
+</html>
+
