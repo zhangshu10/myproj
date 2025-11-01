@@ -13,6 +13,7 @@ class Gomoku {
         this.gameMode = null; // 游戏模式: 'pvp' 或 'pvc'
         this.aiPlayer = 'white'; // AI玩家的颜色
         this.isAiThinking = false; // AI是否正在思考
+        this.aiDifficulty = 'medium'; // AI难度: 'easy', 'medium', 'hard'
         
         this.initModeSelection();
     }
@@ -24,7 +25,24 @@ class Gomoku {
         });
         
         document.getElementById('pvc-btn').addEventListener('click', () => {
-            this.startGame('pvc');
+            this.showDifficultySelection();
+        });
+        
+        // 难度选择按钮
+        document.getElementById('easy-btn').addEventListener('click', () => {
+            this.startGameWithDifficulty('easy');
+        });
+        
+        document.getElementById('medium-btn').addEventListener('click', () => {
+            this.startGameWithDifficulty('medium');
+        });
+        
+        document.getElementById('hard-btn').addEventListener('click', () => {
+            this.startGameWithDifficulty('hard');
+        });
+        
+        document.getElementById('back-to-mode-btn').addEventListener('click', () => {
+            this.backToModeSelection();
         });
         
         document.getElementById('change-mode-btn').addEventListener('click', () => {
@@ -32,17 +50,45 @@ class Gomoku {
         });
     }
     
+    // 显示难度选择
+    showDifficultySelection() {
+        document.getElementById('mode-selection').style.display = 'none';
+        document.getElementById('difficulty-selection').style.display = 'block';
+    }
+    
+    // 开始游戏（带难度）
+    startGameWithDifficulty(difficulty) {
+        this.aiDifficulty = difficulty;
+        this.startGame('pvc');
+    }
+    
     // 开始游戏
     startGame(mode) {
         this.gameMode = mode;
         
-        // 隐藏模式选择，显示游戏界面
+        // 隐藏模式选择和难度选择，显示游戏界面
         document.getElementById('mode-selection').style.display = 'none';
+        document.getElementById('difficulty-selection').style.display = 'none';
         document.getElementById('game-container').style.display = 'block';
         
         // 更新模式显示
         const modeText = document.getElementById('mode-text');
         modeText.textContent = mode === 'pvp' ? '👥 双人对战' : '🤖 人机对战';
+        
+        // 如果是人机对战，显示难度
+        const difficultyText = document.getElementById('difficulty-text');
+        if (mode === 'pvc') {
+            difficultyText.style.display = 'inline-block';
+            difficultyText.className = this.aiDifficulty;
+            const difficultyNames = {
+                'easy': '😊 简单',
+                'medium': '😐 中等',
+                'hard': '😤 困难'
+            };
+            difficultyText.textContent = difficultyNames[this.aiDifficulty];
+        } else {
+            difficultyText.style.display = 'none';
+        }
         
         this.init();
     }
@@ -50,6 +96,7 @@ class Gomoku {
     // 返回模式选择
     backToModeSelection() {
         document.getElementById('mode-selection').style.display = 'block';
+        document.getElementById('difficulty-selection').style.display = 'none';
         document.getElementById('game-container').style.display = 'none';
         this.gameMode = null;
     }
@@ -301,12 +348,14 @@ class Gomoku {
         
         // 只评估有棋子附近的位置（优化性能）
         const consideredCells = new Set();
+        const searchRange = this.aiDifficulty === 'easy' ? 2 : 2; // 搜索范围
+        
         for (let i = 0; i < this.gridSize; i++) {
             for (let j = 0; j < this.gridSize; j++) {
                 if (this.board[i][j]) {
-                    // 在已有棋子周围2格内的空位置
-                    for (let di = -2; di <= 2; di++) {
-                        for (let dj = -2; dj <= 2; dj++) {
+                    // 在已有棋子周围的空位置
+                    for (let di = -searchRange; di <= searchRange; di++) {
+                        for (let dj = -searchRange; dj <= searchRange; dj++) {
                             const ni = i + di;
                             const nj = j + dj;
                             if (ni >= 0 && ni < this.gridSize && 
@@ -328,7 +377,23 @@ class Gomoku {
         
         if (emptyCells.length === 0) return null;
         
-        // 评估每个位置的得分
+        // 简单难度：随机选择，有25%的概率选择最佳位置
+        if (this.aiDifficulty === 'easy') {
+            if (Math.random() < 0.25) {
+                // 选择最佳位置
+                return this.selectBestMove(emptyCells);
+            } else {
+                // 随机选择附近的位置
+                return emptyCells[Math.floor(Math.random() * emptyCells.length)];
+            }
+        }
+        
+        // 中等和困难难度：评估后选择
+        return this.selectBestMove(emptyCells);
+    }
+    
+    // 选择最佳位置
+    selectBestMove(emptyCells) {
         let bestScore = -Infinity;
         let bestMoves = [];
         
@@ -356,8 +421,17 @@ class Gomoku {
         const opponentPlayer = this.aiPlayer === 'black' ? 'white' : 'black';
         const opponentScore = this.getScoreForPlayer(x, y, opponentPlayer);
         
-        // 防守的权重稍微高一点
-        return aiScore + opponentScore * 1.1;
+        // 根据难度调整策略
+        if (this.aiDifficulty === 'easy') {
+            // 简单难度：基本的攻防，防守权重低
+            return aiScore + opponentScore * 0.5;
+        } else if (this.aiDifficulty === 'medium') {
+            // 中等难度：攻防平衡
+            return aiScore + opponentScore * 1.1;
+        } else {
+            // 困难难度：更重视防守和多步预判
+            return aiScore + opponentScore * 1.3;
+        }
     }
     
     // 获取某个玩家在某个位置的得分

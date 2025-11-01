@@ -27,11 +27,38 @@
         </div>
     </div>
 
+    <!-- 难度选择界面 -->
+    <div id="difficulty-selection" class="mode-selection" style="display: none;">
+        <div class="mode-content">
+            <h1>🎮 选择难度</h1>
+            <h2>选择AI难度等级</h2>
+            <div class="difficulty-buttons">
+                <button id="easy-btn" class="difficulty-btn">
+                    <span class="mode-icon">😊</span>
+                    <span class="mode-title">简单</span>
+                    <span class="mode-desc">适合新手</span>
+                </button>
+                <button id="medium-btn" class="difficulty-btn">
+                    <span class="mode-icon">😐</span>
+                    <span class="mode-title">中等</span>
+                    <span class="mode-desc">有一定挑战</span>
+                </button>
+                <button id="hard-btn" class="difficulty-btn">
+                    <span class="mode-icon">😤</span>
+                    <span class="mode-title">困难</span>
+                    <span class="mode-desc">高手对决</span>
+                </button>
+            </div>
+            <button id="back-to-mode-btn" class="btn back-btn">← 返回</button>
+        </div>
+    </div>
+
     <div class="container" id="game-container" style="display: none;">
         <div class="header">
             <h1>🎮 五子棋</h1>
             <div class="game-mode-display">
                 <span id="mode-text">双人对战</span>
+                <span id="difficulty-text" style="display: none;"></span>
                 <button id="change-mode-btn" class="btn-small">切换模式</button>
             </div>
             <div class="game-info">
