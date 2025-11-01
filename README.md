@@ -136,4 +136,4 @@ npx http-server
 ## 🎉 开始游戏
 
 现在就打开 `index.html` 开始享受五子棋的乐趣吧！
-
+ 武汉大学
